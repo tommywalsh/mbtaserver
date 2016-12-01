@@ -1,9 +1,10 @@
 import requests
 import secret
+import mbta_parser
 
 class MBTAServer:
 
-    def runGetRequest(self, url, params={}):
+    def run_get_request(self, url, params={}):
         params['api_key'] = secret.API_KEY
         params['format'] = 'json'
         result = requests.get(url, params=params)
@@ -17,7 +18,7 @@ class MBTAServer:
         return 'http://realtime.mbta.com/developer/api/v2/' + endpoint
 
     def get_all_routes(self):
-        return self.runGetRequest(self.construct_url_for_endpoint('routes'))
+        return mbta_parser.parse_routes(self.run_get_request(self.construct_url_for_endpoint('routes')))
 
 
 server = MBTAServer()
