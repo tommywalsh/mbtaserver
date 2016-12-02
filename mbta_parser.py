@@ -15,3 +15,29 @@ def parse_routes(json):
                 'name' : route_name,
             }
     return all_routes
+
+def has_value(object, name):
+    return name in object and object[name]
+
+def parse_stops(json, route_id):
+    all_stops = {}
+    directions = get_value(json, 'direction')
+    for direction in directions:
+        direction_id = get_value(direction, 'direction_id')
+        stops = get_value(direction, 'stop')
+        for stop in stops:
+            stop_id = get_value(stop, 'stop_id')
+            rd = {'route': route_id, 'direction': direction_id}
+            if stop_id in all_stops:
+                all_stops[stop_id]['routes'].append(rd)
+            else:
+                stop_info = {
+                    'stop_name' : get_value(stop, 'stop_name'),
+                    'lat' : float(get_value(stop, 'stop_lat')),
+                    'lon' : float(get_value(stop, 'stop_lon')),
+                    'routes' : [rd]
+                }
+                if has_value(stop, 'parent_station_name'):
+                    stop_info['parent_station_name'] = stop['parent_station_name']
+                all_stops[stop_id] = stop_info
+    return all_stops

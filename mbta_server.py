@@ -20,6 +20,5 @@ class MBTAServer:
     def get_all_routes(self):
         return mbta_parser.parse_routes(self.run_get_request(self.construct_url_for_endpoint('routes')))
 
-
-server = MBTAServer()
-print server.get_all_routes()
+    def get_stops_for_route(self, routeId):
+        return mbta_parser.parse_stops(self.run_get_request(self.construct_url_for_endpoint('stopsbyroute'), {'route': routeId}), routeId)
