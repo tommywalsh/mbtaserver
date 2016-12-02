@@ -1,5 +1,6 @@
 import database
 import math
+import public_api
 
 # Code modified from the bisect module to allow searching based on a field
 def bisect_left(array, value, key):
@@ -75,14 +76,10 @@ def get_outsets_for_location(db, lat, lon, radius):
             if distance not in best_outsets[route_id][direction_id] or best_outsets[route_id][direction_id]['distance'] > distance:
                 best_outsets[route_id][direction_id]['distance'] = distance
                 best_outsets[route_id][direction_id]['stop_id'] = stop
-    return best_outsets
 
-
-
-#db = database.create_from_static_data()
-db = database.create_from_mbta_server()
-
-lat = 42.379583
-lon = -71.095352
-
-print get_outsets_for_location(db, lat, lon, 0.25)
+    # Finally, loop and create an array of actual Outset objects
+    outsets = []
+    for route_id in best_outsets:
+        for direction_id in best_outsets[route_id]:
+            outsets.append(public_api.make_outset(route_id, direction_id, best_outsets[route_id][direction_id]['stop_id']))
+    return outsets
