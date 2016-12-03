@@ -1,3 +1,5 @@
+# This code handles translation from the data returned by the MBTA's server into a format more useful to us.
+
 def get_value(json, key):
     if key in json:
         return json[key]

@@ -1,7 +1,14 @@
 import requests
-import secret
 import mbta_parser
 
+# Note: secret.py is not checked into source control.
+# It contains an API key for accessing the MBTA server.
+# Each user of this code should provide their own file secret.py that defines
+# API_KEY to be their own personal key.
+import secret
+
+
+# Code for making calls to the MBTA server
 class MBTAServer:
 
     def run_get_request(self, url, params={}):

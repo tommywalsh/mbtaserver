@@ -1,6 +1,8 @@
 import json
 from mbta_server import MBTAServer
 
+# An in-memory data store of various pieces of MBTA data that can be preloaded before any user queries
+
 def read_json_file(filename):
     with open(filename) as file:
         return json.load(file)
