@@ -1,0 +1,36 @@
+OVERVIEW:
+This project aims to provide a "stripped-down" MBTA API, and is part of a larger effort to provide
+a useful service to certain special-case transit users.
+
+THE PROBLEM:
+Most transit-related apps are logically organized around the idea that the user must take a particular
+route, or at least must travel to a particular station from a particular start point.
+
+But, consider the case of someone living in Union Square in Somerville who wants to go downtown. Transit
+options for this person are:
+- Take 85 to Kendall, transfer to Red Line
+- Take 86 to Harvard, transfer to Red Line
+- Take 86 to Sullivan, transfer to Orange Line
+- Take 87 to Lechmere, transfer to Green Line
+- Take 91 to Sullivan, transfer to Orange Line
+- Take 91 to Central, transfer to Red Line
+- Take CT2 to Sullivan, transfer to Orange Line
+- Take CT2 to Kendall, transfer to Red Line
+
+This person does not have much of a preference among these buses, she just wants to know which ones will
+be coming soon, and where to go stand to catch them. I don't know of another transit app that serves
+this purpose. Most would make you look up all 8 routes separately.
+
+THE DESIGN:
+This code is designed to run on a server, providing a very simple API that aims to answer just the questions
+that would be asked by an app for the aforementioned transit user.
+
+This code will pre-fetch various MBTA data from the server when it starts, and then will just listen
+for new requests from any apps that wish to connect to it.
+
+When a new request comes in, this code will make calls out to the MBTA server, process the results, and
+return only the relevant information to the caller.
+
+A previous design ran entirely as an Android app, and is now using a deprecated API. This project will use
+the new, supported API. It is hoped that it will make it easy to write apps for various devices (not just
+Android), without having to rewrite a lot of code.
