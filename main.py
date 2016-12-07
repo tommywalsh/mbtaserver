@@ -8,6 +8,7 @@ api = Api(app)
 
 # Hook up the REST providers
 api.add_resource(rest_providers.OutsetsForLocation, '/outsetsForLocation')
+api.add_resource(rest_providers.DeparturesForOutsets, '/departuresForOutsets')
 
 # Run the REST application
 if __name__ == '__main__':

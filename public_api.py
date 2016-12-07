@@ -1,8 +1,6 @@
 import database
 import sanitizer
 import mbta_util
-from flask import Flask, request
-from flask_restful import Resource, Api
 
 # Simple class that defines all of the public API functions.
 # This code could just as well have been written inline in rest_providers, but it seemed cleaner
@@ -13,3 +11,6 @@ class APIProvider:
 
     def get_outsets_for_location(self, lat, lon):
         return mbta_util.get_outsets_for_location(self.db, lat, lon, 0.25)
+
+    def get_predictions_for_outsets(self, outsets):
+        return mbta_util.get_predictions_for_outsets(self.db, outsets)

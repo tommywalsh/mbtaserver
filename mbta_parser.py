@@ -43,3 +43,28 @@ def parse_stops(json, route_id):
                     stop_info['parent_station_name'] = stop['parent_station_name']
                 all_stops[stop_id] = stop_info
     return all_stops
+
+def parse_stop_predictions(json):
+    predictions = []
+    stop_id = get_value(json, 'stop_id')
+    stop_name = get_value(json, 'stop_name')
+    if 'mode' in json:
+        for mode in get_value(json, 'mode'):
+            for route in get_value(mode, 'route'):
+                route_id = get_value(route, 'route_id')
+                route_name = get_value(route, 'route_name')
+                for direction in get_value(route, 'direction'):
+                    direction_id = get_value(direction, 'direction_id')
+                    for trip in get_value(direction, 'trip'):
+                        wait_time = get_value(trip, 'pre_away')
+                        headsign = get_value(trip, 'trip_headsign')
+                        predictions.append({
+                            'stop_id': stop_id,
+                            'stop_name': stop_name,
+                            'route_id': route_id,
+                            'route_name': route_name,
+                            'direction_id': direction_id,
+                            'wait_time': int(wait_time),
+                            'headsign': headsign
+                        })
+    return predictions

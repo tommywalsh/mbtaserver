@@ -1,6 +1,9 @@
 import math
 import bisector
 import datatypes
+import threader
+import mbta_parser
+from mbta_server import MBTAServer
 
 # Various functions for processing MBTA data
 
@@ -53,3 +56,53 @@ def get_outsets_for_location(db, lat, lon, radius):
         for direction_id in best_outsets[route_id]:
             outsets.append(datatypes.make_outset(route_id, direction_id, best_outsets[route_id][direction_id]['stop_id']))
     return outsets
+
+server = MBTAServer()
+
+def organize_outsets_by_stop(outsets):
+    outsetsByStop = {}
+    for outset in outsets:
+        stop = outset['stop_id']
+        if stop in outsetsByStop:
+            outsetsByStop[stop].append(outset)
+        else:
+            outsetsByStop[stop] = [outset]
+    return outsetsByStop
+
+def get_tasks_for_stop_predictions(outsetsByStop):
+    def make_getter(stop):
+        def getter():
+            return server.get_predictions_for_stop(stop)
+        return getter
+
+    tasks = []
+    for stop in outsetsByStop:
+        tasks.append(make_getter(stop))
+    return tasks
+
+def cull_predictions_for_outsets(predictions, outsetsByStop):
+    culled_predictions = []
+    for prediction in predictions:
+        stop_id = prediction['stop_id']
+        if stop_id in outsetsByStop:
+            for outsetStop in outsetsByStop:
+                for outset in outsetsByStop[outsetStop]:
+                    if outset['route_id'] == prediction['route_id'] and outset['direction_id'] == prediction['direction_id']:
+                        culled_predictions.append(prediction)
+                        break
+    return culled_predictions
+
+def collect_predictions(outsetsByStop, results):
+    all_predictions = []
+    for result in results:
+        predictions = mbta_parser.parse_stop_predictions(result)
+        all_predictions.extend(cull_predictions_for_outsets(predictions, outsetsByStop))
+    all_predictions.sort(key=lambda prediction: prediction['wait_time'])
+    return all_predictions
+
+
+def get_predictions_for_outsets(db, outsets):
+    outsetsByStop = organize_outsets_by_stop(outsets)
+    tasks = get_tasks_for_stop_predictions(outsetsByStop)
+    (success, results) = threader.run_on_other_threads(tasks, 10)
+    return collect_predictions(outsetsByStop, results)

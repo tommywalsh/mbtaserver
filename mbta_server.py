@@ -29,3 +29,6 @@ class MBTAServer:
 
     def get_stops_for_route(self, routeId):
         return mbta_parser.parse_stops(self.run_get_request(self.construct_url_for_endpoint('stopsbyroute'), {'route': routeId}), routeId)
+
+    def get_predictions_for_stop(self, stopId):
+        return self.run_get_request(self.construct_url_for_endpoint('predictionsbystop'), {'stop': stopId})
